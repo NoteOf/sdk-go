@@ -1,6 +1,7 @@
 package sdk
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -38,7 +39,7 @@ func (a *AuthenticatedAPI) GetNotes() ([]*Note, error) {
 	client := &http.Client{}
 
 	// Create request
-	req, err := http.NewRequest("POST", a.GetEndpoint()+"/auth", nil)
+	req, err := http.NewRequest("GET", a.GetEndpoint()+"/notes", nil)
 	a.authRequest(req)
 
 	// Fetch Request
@@ -46,6 +47,7 @@ func (a *AuthenticatedAPI) GetNotes() ([]*Note, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusForbidden {
@@ -63,9 +65,43 @@ func (a *AuthenticatedAPI) GetNotes() ([]*Note, error) {
 		return nil, err
 	}
 
-	// if tresp.APIToken == "" {
-	// 	return nil, ErrUnexpectedServerResponse
-	// }
+	return tresp, nil
+}
+
+func (a *AuthenticatedAPI) PostNewNote(n *Note) (*Note, error) {
+	client := &http.Client{}
+
+	j, err := json.Marshal(n)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create request
+	req, err := http.NewRequest("POST", a.GetEndpoint()+"/notes", bytes.NewBuffer(j))
+	a.authRequest(req)
+
+	// Fetch Request
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusForbidden {
+		return nil, ErrInvalidCredentials
+	} else if resp.StatusCode != http.StatusCreated {
+		text, err := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("%d: %s%s", resp.StatusCode, text, err)
+	}
+
+	tresp := &Note{}
+
+	dec := json.NewDecoder(resp.Body)
+	err = dec.Decode(&tresp)
+	if err != nil {
+		return nil, err
+	}
 
 	return tresp, nil
 }
