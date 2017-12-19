@@ -68,6 +68,41 @@ func (a *AuthenticatedAPI) GetNotes() ([]*Note, error) {
 	return tresp, nil
 }
 
+func (a *AuthenticatedAPI) GetNote(noteID int64) (*Note, error) {
+	client := &http.Client{}
+
+	// Create request
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/notes/%d", a.GetEndpoint(), noteID), nil)
+	a.authRequest(req)
+
+	// Fetch Request
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusForbidden {
+		return nil, ErrInvalidCredentials
+	} else if resp.StatusCode == http.StatusNotFound {
+		return nil, ErrNotFound
+	} else if resp.StatusCode != http.StatusOK {
+		text, err := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("%d: %s%s", resp.StatusCode, text, err)
+	}
+
+	tresp := &Note{}
+
+	dec := json.NewDecoder(resp.Body)
+	err = dec.Decode(&tresp)
+	if err != nil {
+		return nil, err
+	}
+
+	return tresp, nil
+}
+
 func (a *AuthenticatedAPI) PostNewNote(n *Note) (*Note, error) {
 	client := &http.Client{}
 
@@ -104,4 +139,70 @@ func (a *AuthenticatedAPI) PostNewNote(n *Note) (*Note, error) {
 	}
 
 	return tresp, nil
+}
+
+func (a *AuthenticatedAPI) PutUpdateNote(n *Note) (*Note, error) {
+	client := &http.Client{}
+
+	j, err := json.Marshal(n)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create request
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/notes/%d", a.GetEndpoint(), n.NoteID), bytes.NewBuffer(j))
+	a.authRequest(req)
+
+	// Fetch Request
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusForbidden {
+		return nil, ErrInvalidCredentials
+	} else if resp.StatusCode != http.StatusOK {
+		text, err := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("%d: %s%s", resp.StatusCode, text, err)
+	}
+
+	tresp := &Note{}
+
+	dec := json.NewDecoder(resp.Body)
+	err = dec.Decode(&tresp)
+	if err != nil {
+		return nil, err
+	}
+
+	return tresp, nil
+}
+
+func (a *AuthenticatedAPI) DeleteNote(noteID int64) (bool, error) {
+	client := &http.Client{}
+
+	// Create request
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/notes/%d", a.GetEndpoint(), noteID), nil)
+	a.authRequest(req)
+
+	// Fetch Request
+	resp, err := client.Do(req)
+	if err != nil {
+		return false, err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusForbidden {
+		return false, ErrInvalidCredentials
+	} else if resp.StatusCode == http.StatusNotFound {
+		// already deleted
+		return false, ErrNotFound
+	} else if resp.StatusCode != http.StatusNoContent {
+		text, err := ioutil.ReadAll(resp.Body)
+		return false, fmt.Errorf("%d: %s%s", resp.StatusCode, text, err)
+	}
+
+	return true, nil
 }
