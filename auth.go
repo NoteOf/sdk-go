@@ -20,6 +20,7 @@ type TokenResponse struct {
 
 var (
 	ErrInvalidCredentials       = errors.New("invalid username or password")
+	ErrNotFound                 = errors.New("not found")
 	ErrUnexpectedServerResponse = errors.New("invalid server response")
 )
 
