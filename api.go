@@ -1,6 +1,6 @@
 package sdk
 
-const NoteOfItEndpoint = "http://api.noteof.it"
+const NoteOfItEndpoint = "https://api.noteof.app"
 
 type api struct {
 	Endpoint string
