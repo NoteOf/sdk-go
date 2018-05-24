@@ -1,3 +1,3 @@
-# SDK for Noteof.it
+# SDK for NoteOf
 
 development in progress
