@@ -11,6 +11,7 @@ import (
 
 type TokenRequest struct {
 	Usage string `json:"usage"`
+	TTL   *uint  `json:"ttl,omitempty"`
 }
 
 type TokenResponse struct {
