@@ -1,6 +1,6 @@
 package sdk
 
-const NoteOfItEndpoint = "https://api.noteof.app"
+const NoteOfEndpoint = "https://api.noteof.app"
 
 type api struct {
 	Endpoint string
@@ -11,7 +11,7 @@ func (a *api) GetEndpoint() string {
 		return a.Endpoint
 	}
 
-	return NoteOfItEndpoint
+	return NoteOfEndpoint
 }
 
 type UnauthenticatedAPI struct {
