@@ -6,7 +6,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
+	"strings"
 	"time"
+
+	"golang.org/x/text/unicode/norm"
 )
 
 type NoteText struct {
@@ -17,6 +21,20 @@ type NoteText struct {
 }
 
 type NoteTag string
+
+// C14nReg matches Combining Diacritical Marks
+//
+// see: https://en.wikipedia.org/wiki/Combining_Diacritical_Marks
+var C14nReg = regexp.MustCompile("[\u0300-\u036f]")
+
+// C14n provides the standard method by which tags are canonicalized
+func (nt NoteTag) C14n() string {
+	s := strings.ToLower(string(nt))
+	s = norm.NFD.String(s)
+	s = C14nReg.ReplaceAllString(s, "")
+
+	return s
+}
 
 type Note struct {
 	NoteID int64 `json:"note_id"`
