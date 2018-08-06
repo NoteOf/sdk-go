@@ -20,18 +20,27 @@ type NoteText struct {
 	Created       time.Time `json:"created"`
 }
 
+// NoteTag is a string that includes methods for canonicalizing the tag as used
+// by the server itself
 type NoteTag string
 
-// C14nReg matches Combining Diacritical Marks
-//
+// c14nReg matches Combining Diacritical Marks
 // see: https://en.wikipedia.org/wiki/Combining_Diacritical_Marks
-var C14nReg = regexp.MustCompile("[\u0300-\u036f]")
+var c14nReg = regexp.MustCompile("[\u0300-\u036f]")
 
-// C14n provides the standard method by which tags are canonicalized
+// C14n provides the standard method by which tags are canonicalized.
+//
+// The process involves converting the string to NFD normalization and
+// removing all Combining Diacritical Marks
+//
+// There should be little need to call this directly other than perhaps
+// comparing strings that have not yet been canonicalized by the server,
+// it is provided here as a helper for such comparison but shall not
+// be needed before a roundtrip to the server.
 func (nt NoteTag) C14n() string {
 	s := strings.ToLower(string(nt))
 	s = norm.NFD.String(s)
-	s = C14nReg.ReplaceAllString(s, "")
+	s = c14nReg.ReplaceAllString(s, "")
 
 	return s
 }
