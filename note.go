@@ -50,6 +50,7 @@ type Note struct {
 	// UserID     int       `json:"-"`
 	// NoteTextID int64     `json:"-"` // maybe get rid of?
 	Archived bool      `json:"archived"`
+	Starred  bool      `json:"starred"`
 	Created  time.Time `json:"created"`
 
 	Tags []NoteTag `json:"tags"`
