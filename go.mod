@@ -1,4 +1,4 @@
-module github.com/Noteof/sdk-go
+module github.com/NoteOf/sdk-go
 
 go 1.13
 
