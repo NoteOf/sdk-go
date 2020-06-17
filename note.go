@@ -68,6 +68,10 @@ func (a *AuthenticatedAPI) GetNotes() ([]*Note, error) {
 
 	// Create request
 	req, err := http.NewRequest("GET", a.GetEndpoint()+"/notes", nil)
+	if err != nil {
+		return nil, err
+	}
+
 	a.authRequest(req)
 
 	// Fetch Request
@@ -101,6 +105,10 @@ func (a *AuthenticatedAPI) GetNote(noteID int64) (*Note, error) {
 
 	// Create request
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/notes/%d", a.GetEndpoint(), noteID), nil)
+	if err != nil {
+		return nil, err
+	}
+
 	a.authRequest(req)
 
 	// Fetch Request
@@ -141,6 +149,9 @@ func (a *AuthenticatedAPI) PostNewNote(n *Note) (*Note, error) {
 
 	// Create request
 	req, err := http.NewRequest("POST", a.GetEndpoint()+"/notes", bytes.NewBuffer(j))
+	if err != nil {
+		return nil, err
+	}
 	a.authRequest(req)
 
 	// Fetch Request
@@ -179,6 +190,9 @@ func (a *AuthenticatedAPI) PutUpdateNote(n *Note) (*Note, error) {
 
 	// Create request
 	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/notes/%d", a.GetEndpoint(), n.NoteID), bytes.NewBuffer(j))
+	if err != nil {
+		return nil, err
+	}
 	a.authRequest(req)
 
 	// Fetch Request
@@ -212,6 +226,9 @@ func (a *AuthenticatedAPI) DeleteNote(noteID int64) (bool, error) {
 
 	// Create request
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/notes/%d", a.GetEndpoint(), noteID), nil)
+	if err != nil {
+		return false, err
+	}
 	a.authRequest(req)
 
 	// Fetch Request

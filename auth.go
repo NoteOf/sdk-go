@@ -39,6 +39,9 @@ func (u *UnauthenticatedAPI) DoAuth(username, password, usage string) (*TokenRes
 
 	// Create request
 	req, err := http.NewRequest("POST", u.GetEndpoint()+"/auth", reqbody)
+	if err != nil {
+		return nil, err
+	}
 
 	// Headers
 	req.SetBasicAuth(username, password)
