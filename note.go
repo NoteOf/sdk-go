@@ -86,7 +86,11 @@ func (a *AuthenticatedAPI) GetNotes() ([]*Note, error) {
 		return nil, ErrInvalidCredentials
 	} else if resp.StatusCode != http.StatusOK {
 		text, err := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("%d: %s%s", resp.StatusCode, text, err)
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, fmt.Errorf("%d: %s", resp.StatusCode, text)
 	}
 
 	tresp := []*Note{}
@@ -125,7 +129,11 @@ func (a *AuthenticatedAPI) GetNote(noteID int64) (*Note, error) {
 		return nil, ErrNotFound
 	} else if resp.StatusCode != http.StatusOK {
 		text, err := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("%d: %s%s", resp.StatusCode, text, err)
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, fmt.Errorf("%d: %s", resp.StatusCode, text)
 	}
 
 	tresp := &Note{}
@@ -166,7 +174,11 @@ func (a *AuthenticatedAPI) PostNewNote(n *Note) (*Note, error) {
 		return nil, ErrInvalidCredentials
 	} else if resp.StatusCode != http.StatusCreated {
 		text, err := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("%d: %s%s", resp.StatusCode, text, err)
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, fmt.Errorf("%d: %s", resp.StatusCode, text)
 	}
 
 	tresp := &Note{}
@@ -207,7 +219,11 @@ func (a *AuthenticatedAPI) PutUpdateNote(n *Note) (*Note, error) {
 		return nil, ErrInvalidCredentials
 	} else if resp.StatusCode != http.StatusOK {
 		text, err := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("%d: %s%s", resp.StatusCode, text, err)
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, fmt.Errorf("%d: %s", resp.StatusCode, text)
 	}
 
 	tresp := &Note{}
@@ -246,7 +262,11 @@ func (a *AuthenticatedAPI) DeleteNote(noteID int64) (bool, error) {
 		return false, ErrNotFound
 	} else if resp.StatusCode != http.StatusNoContent {
 		text, err := ioutil.ReadAll(resp.Body)
-		return false, fmt.Errorf("%d: %s%s", resp.StatusCode, text, err)
+		if err != nil {
+			return false, err
+		}
+
+		return false, fmt.Errorf("%d: %s", resp.StatusCode, text)
 	}
 
 	return true, nil

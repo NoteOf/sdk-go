@@ -57,7 +57,11 @@ func (u *UnauthenticatedAPI) DoAuth(username, password, usage string) (*TokenRes
 		return nil, ErrInvalidCredentials
 	} else if resp.StatusCode != http.StatusCreated {
 		text, err := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("%d: %s%s", resp.StatusCode, text, err)
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, fmt.Errorf("%d: %s", resp.StatusCode, text)
 	}
 
 	tresp := TokenResponse{}
