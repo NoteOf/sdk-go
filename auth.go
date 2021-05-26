@@ -15,8 +15,8 @@ type TokenRequest struct {
 }
 
 type TokenResponse struct {
-	User *User `json:"user"`
-	*Token
+	User   *User `json:"user"`
+	*Token `json:",omitempty"`
 }
 
 var (
