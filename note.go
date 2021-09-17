@@ -46,7 +46,7 @@ func (nt NoteTag) C14n() string {
 }
 
 type Note struct {
-	NoteID int64 `json:"note_id"`
+	PublicID string `json:"public_id"`
 	// UserID     int       `json:"-"`
 	// NoteTextID int64     `json:"-"` // maybe get rid of?
 	Archived bool      `json:"archived"`
@@ -104,11 +104,11 @@ func (a *AuthenticatedAPI) GetNotes() ([]*Note, error) {
 	return tresp, nil
 }
 
-func (a *AuthenticatedAPI) GetNote(noteID int64) (*Note, error) {
+func (a *AuthenticatedAPI) GetNote(publicID string) (*Note, error) {
 	client := &http.Client{}
 
 	// Create request
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/notes/%d", a.GetEndpoint(), noteID), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/notes/%s", a.GetEndpoint(), publicID), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -201,7 +201,7 @@ func (a *AuthenticatedAPI) PutUpdateNote(n *Note) (*Note, error) {
 	}
 
 	// Create request
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/notes/%d", a.GetEndpoint(), n.NoteID), bytes.NewBuffer(j))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/notes/%s", a.GetEndpoint(), n.PublicID), bytes.NewBuffer(j))
 	if err != nil {
 		return nil, err
 	}
@@ -237,11 +237,11 @@ func (a *AuthenticatedAPI) PutUpdateNote(n *Note) (*Note, error) {
 	return tresp, nil
 }
 
-func (a *AuthenticatedAPI) DeleteNote(noteID int64) (bool, error) {
+func (a *AuthenticatedAPI) DeleteNote(publicID string) (bool, error) {
 	client := &http.Client{}
 
 	// Create request
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/notes/%d", a.GetEndpoint(), noteID), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/notes/%s", a.GetEndpoint(), publicID), nil)
 	if err != nil {
 		return false, err
 	}
