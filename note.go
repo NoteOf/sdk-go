@@ -24,6 +24,14 @@ type NoteText struct {
 // by the server itself
 type NoteTag string
 
+// NoteMeta is a map of string keys to string values that can be used to store
+// arbitrary metadata about a note that is not part of the note itself
+// and is useful for implementation specific values.
+//
+// The server enforces a 255 character limit on both keys and values.
+// The key is expected to be ascii only and the value is expected to be utf-8
+type NoteMeta map[string]string
+
 // c14nReg matches Combining Diacritical Marks
 // see: https://en.wikipedia.org/wiki/Combining_Diacritical_Marks
 var c14nReg = regexp.MustCompile("[\u0300-\u036f]")
@@ -54,6 +62,7 @@ type Note struct {
 	Created  time.Time `json:"created"`
 
 	Tags []NoteTag `json:"tags"`
+	Meta NoteMeta  `json:"meta"`
 
 	CurrentText *NoteText   `json:"current"`
 	TextHistory []*NoteText `json:"history,omitempty"`
