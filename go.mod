@@ -1,5 +1,7 @@
 module github.com/NoteOf/sdk-go
 
-go 1.18
+go 1.24
 
-require golang.org/x/text v0.19.0
+toolchain go1.24.4
+
+require golang.org/x/text v0.26.0
